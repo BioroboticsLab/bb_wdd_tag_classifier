@@ -31,9 +31,9 @@
       "false_negative": 0
     },
     "precision": 0.0,
-    "recall": NaN,
+    "recall": "NaN",
     "f1_score": 0.0,
-    "roc_auc_score": NaN
+    "roc_auc_score": "NaN"
   },
   "2024-08-16": {
     "confusion_matrix": {
@@ -324,3 +324,4 @@
     "roc_auc_score": 0.730560032232071
   }
 }
+

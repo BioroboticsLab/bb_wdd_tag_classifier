@@ -102,9 +102,9 @@ def main():
         results[dir.name] = dict(
             confusion_matrix=confusion_matrix,
             precision=precision,
-            recall=recall,
+            recall=recall if not np.isnan(recall) else "NaN",
             f1_score=f1_score,
-            roc_auc_score=roc_auc_score,
+            roc_auc_score=roc_auc_score if not np.isnan(roc_auc_score) else "NaN",
         )
 
         results["total"]["confusion_matrix"]["true_positive"] += tp
