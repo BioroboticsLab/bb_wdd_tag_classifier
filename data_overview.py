@@ -11,8 +11,11 @@ from daily_data_processing import is_wood_in_frame
 
 def main():
     """
-    Gives a daily overview of the number of detections, videos  per dance type
-    and how many videos are filtered out by the wood filter.
+    Processes zipped WDD detection data to produce a daily overview of the
+    number of detections and video snippets per predicted class label.
+
+    If the --woodfilter flag is set, also counts how many detections would be
+    filtered out due to wood being visible in the frame.
     """
     parser = init_argparse()
     args: MyArgs = parser.parse_args(namespace=MyArgs())
@@ -63,7 +66,7 @@ class MyArgs(argparse.Namespace):
 def init_argparse() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Gives a daily overview of the number of detections and videos per dance type and how many videos would be filtered out by the wood filter"
+            "Processes zipped WDD detection data to produce a daily overview of the number of detections and video snippets per predicted class label."
         ),
     )
     parser.add_argument(
@@ -74,7 +77,7 @@ def init_argparse() -> argparse.ArgumentParser:
     parser.add_argument(
         "--woodfilter",
         action="store_true",
-        help="Enable filtering and counting of detections with wood in the frame",
+        help="enable counting of detections with wood in the frame",
     )
     return parser
 
