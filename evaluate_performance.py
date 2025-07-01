@@ -134,6 +134,7 @@ def main():
     results["total"]["roc_auc_score"] = roc_auc_score_total
 
     output_path = Path.cwd() / "output" / "classifier_results.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w") as file:
         json.dump(results, file, indent=2)
 

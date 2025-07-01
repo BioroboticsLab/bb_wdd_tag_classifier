@@ -67,6 +67,7 @@ def main():
         date_str = zip_path.stem
         data[date_str] = day_data
     output_path = Path.cwd() / "output" / "data_overview.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w") as file:
         json.dump(data, file, indent=2)
 
