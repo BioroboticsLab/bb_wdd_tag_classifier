@@ -1,3 +1,5 @@
+from typing import Literal, Tuple, Union, overload
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -22,8 +24,30 @@ class TaggedBeeClassificationModel(nn.Module):
         x = self.fc2(x)
         return x
 
+    @overload
     @staticmethod
-    def postprocess_predictions(outputs, numpy=True):
+    def postprocess_predictions(
+        outputs: torch.Tensor, numpy: Literal[True]
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]: ...
+
+    @overload
+    @staticmethod
+    def postprocess_predictions(
+        outputs: torch.Tensor, numpy: Literal[False]
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]: ...
+
+    @overload
+    @staticmethod
+    def postprocess_predictions(
+        outputs: torch.Tensor, numpy: bool = True
+    ) -> Tuple[
+        Union[np.ndarray, torch.Tensor],
+        Union[np.ndarray, torch.Tensor],
+        Union[np.ndarray, torch.Tensor],
+    ]: ...
+
+    @staticmethod
+    def postprocess_predictions(outputs: torch.Tensor, numpy: bool = True):
         probabilities = F.softmax(outputs, 1)
         predictions = torch.argmax(outputs, 1)
         confidences = probabilities[np.arange(probabilities.shape[0]), predictions]
