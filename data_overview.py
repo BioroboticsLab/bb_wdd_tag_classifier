@@ -16,11 +16,10 @@ def main():
     for zip_path in tqdm(zip_files):
         if not zip_path.suffix == ".zip":
             continue
+        dance_types = ["waggle", "activating", "ventilating", "other"]
         day_data = {
-            "waggle": {"detections": 0, "videos": 0, "wood filter": 0},
-            "activating": {"detections": 0, "videos": 0, "wood filter": 0},
-            "ventilating": {"detections": 0, "videos": 0, "wood filter": 0},
-            "other": {"detections": 0, "videos": 0, "wood filter": 0},
+            label: {"detections": 0, "videos": 0, "wood filter": 0}
+            for label in dance_types
         }
         with ZipFile(zip_path) as zip_file:
             files = zip_file.namelist()
