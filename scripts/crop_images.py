@@ -5,7 +5,7 @@ from zipfile import ZipFile
 from PIL import Image
 from tqdm import tqdm
 
-from daily_data_processing import IMAGE_SIZE
+from hyperparameters import image_size
 from image_cropping import crop_center
 
 
@@ -16,8 +16,8 @@ def main():
     create_cropped_images(
         zips_dir=args.zipped_wdd_data_dir,
         target_dir=args.cropped_image_output_dir,
-        output_width=IMAGE_SIZE,
-        output_height=IMAGE_SIZE,
+        output_width=image_size,
+        output_height=image_size,
     )
 
 

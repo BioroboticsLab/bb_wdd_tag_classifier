@@ -11,10 +11,10 @@ from ffmpeg import FFmpeg
 from PIL import Image
 from tqdm import tqdm
 
+from hyperparameters import image_size
 from image_cropping import crop_center
 from inference import TaggedBeeClassifierConvNet, class_labels
 
-IMAGE_SIZE = 50
 TAGGED_DANCE_DIR = "tagged-dances"
 UNTAGGED_DANCE_DIR = "untagged-dances"
 TAGGED = "tagged"
@@ -66,7 +66,7 @@ def main():
                     continue
                 with zip_file.open(video_filename) as video_file:
                     with Image.open(video_file) as image:
-                        cropped_image = crop_center(image, IMAGE_SIZE, IMAGE_SIZE)
+                        cropped_image = crop_center(image, image_size, image_size)
                 prediction, confidence = classifier.classify_single_image(cropped_image)
                 day_dance_id = f"{count:04d}"
                 day_dance_ids.append(day_dance_id)
@@ -150,7 +150,7 @@ def is_wood_in_frame(json_data):
     center_y += correction_offset
 
     # Apply offset to account for size of cropped image that the model works on
-    frame_offset = IMAGE_SIZE // 2
+    frame_offset = image_size // 2
     return (
         center_x - frame_offset <= border_left
         or center_x + frame_offset >= border_right
