@@ -1,3 +1,4 @@
+import argparse
 import datetime
 import json
 import tempfile
@@ -14,8 +15,6 @@ from image_cropping import crop_center
 from inference import TaggedBeeClassifierConvNet, class_labels
 
 IMAGE_SIZE = 50
-ZIPS_PATH = Path("/mnt/trove/wdd/wdd_output_2024/cam0/2024")
-TARGET = Path("/home/local_storage/processed-bee-data")
 TAGGED_DANCE_DIR = "tagged-dances"
 UNTAGGED_DANCE_DIR = "untagged-dances"
 TAGGED = "tagged"
@@ -27,11 +26,15 @@ def main():
     Classifies video snippets and processes WDD data into the expected format
     for the Bee Tag Corrector interface.
     """
+    parser = init_argparse()
+    args: MyArgs = parser.parse_args(namespace=MyArgs())
+    zipped_wdd_data_dir = Path(args.zipped_wdd_data_dir)
+    output_dir = Path(args.output_dir)
     classifier = TaggedBeeClassifierConvNet("output/model.pth")
-    for zip_path in tqdm(list(ZIPS_PATH.rglob("*"))):
+    for zip_path in tqdm(list(zipped_wdd_data_dir.rglob("*"))):
         if not zip_path.suffix == ".zip":
             continue
-        daily_target = TARGET / zip_path.stem
+        daily_target = output_dir / zip_path.stem
         # Ignore days that were already processed.
         if daily_target.exists():
             print(f"{daily_target} already exists.")
@@ -180,6 +183,30 @@ def encode_video(input: Path, output: Path):
         .output(str(output), {"codec:v": "libx264"}, crf=18, pix_fmt="yuv420p")
     )
     ffmpeg.execute()
+
+
+class MyArgs(argparse.Namespace):
+    zipped_wdd_data_dir: Path
+    output_dir: Path
+
+
+def init_argparse() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Extracts and crops the first frame from APNG video snippets, applies the tag classifier and processes the data and video snippets into the output directory in a format that is compatible with the Label GUI"
+        ),
+    )
+    parser.add_argument(
+        "zipped_wdd_data_dir",
+        type=Path,
+        help="path to directory containing zip archives of WDD detection data (APNG video snippets and JSON metadata)",
+    )
+    parser.add_argument(
+        "output_dir",
+        type=Path,
+        help="path to output directory",
+    )
+    return parser
 
 
 if __name__ == "__main__":
