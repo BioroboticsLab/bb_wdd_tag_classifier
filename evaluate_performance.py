@@ -133,8 +133,9 @@ def main():
     results["total"]["f1_score"] = f1_score_total
     results["total"]["roc_auc_score"] = roc_auc_score_total
 
-    with open("output/classifier_results.json", "w") as fp:
-        json.dump(results, fp, indent=2)
+    output_path = Path.cwd() / "output" / "classifier_results.json"
+    with output_path.open("w") as file:
+        json.dump(results, file, indent=2)
 
 
 if __name__ == "__main__":

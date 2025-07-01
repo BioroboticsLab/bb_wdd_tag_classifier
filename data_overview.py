@@ -66,7 +66,8 @@ def main():
                     day_data[label]["videos"] += 1
         date_str = zip_path.stem
         data[date_str] = day_data
-    with open("output/data_overview.json", "w") as file:
+    output_path = Path.cwd() / "output" / "data_overview.json"
+    with output_path.open("w") as file:
         json.dump(data, file, indent=2)
 
 
