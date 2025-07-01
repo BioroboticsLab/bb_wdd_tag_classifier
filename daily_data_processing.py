@@ -1,6 +1,7 @@
 import argparse
 import datetime
 import json
+import sys
 import tempfile
 from pathlib import Path
 from zipfile import ZipFile
@@ -18,7 +19,6 @@ from inference import TaggedBeeClassifierConvNet, class_labels
 TAGGED_DANCE_DIR = "tagged-dances"
 UNTAGGED_DANCE_DIR = "untagged-dances"
 TAGGED = "tagged"
-FRAMEDIR_WDD = Path("/mnt/trove/wdd/wdd_output_2024/fullframes")
 
 
 def main():
@@ -29,6 +29,13 @@ def main():
     args: MyArgs = parser.parse_args(namespace=MyArgs())
     zipped_wdd_data_dir = Path(args.zipped_wdd_data_dir)
     output_dir = Path(args.output_dir)
+    try:
+        wdd_markers_path = Path(args.wdd_markers_path)
+        validate_csv_path(wdd_markers_path)
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
     classifier = TaggedBeeClassifierConvNet("output/model.pth")
     for zip_path in tqdm(list(zipped_wdd_data_dir.rglob("*"))):
         if not zip_path.suffix == ".zip":
@@ -60,7 +67,7 @@ def main():
                     # the model thinks the bright pixels of the wooden frame on
                     # the comb are tags, so we ignore those detections.
                 if json_data["predicted_class_label"] != "waggle" or is_wood_in_frame(
-                    json_data
+                    json_data, wdd_markers_path
                 ):
                     continue
                 with zip_file.open(video_filename) as video_file:
@@ -110,12 +117,12 @@ def main():
             df.to_csv(daily_target / "data.csv", index=False)
 
 
-def is_wood_in_frame(json_data):
+def is_wood_in_frame(json_data, wdd_markers_path: Path):
     """
     Estimates whether the cropped image of the corresponding dance shows a part
     of the wooden frame on the comb based on the position of the dance.
     """
-    df_markers_wdd = pd.read_csv(FRAMEDIR_WDD / "df_markers.csv")
+    df_markers_wdd = pd.read_csv(wdd_markers_path)
     wdd_markers = get_marker_coordinates_by_timestamp(
         detection_timestamp=json_data["timestamp_begin"],
         df_markers=df_markers_wdd,
@@ -184,8 +191,18 @@ def encode_video(input: Path, output: Path):
     ffmpeg.execute()
 
 
+def validate_csv_path(path: Path) -> None:
+    if not path.exists():
+        raise FileNotFoundError(f"File does not exist: {path}")
+    if not path.is_file():
+        raise ValueError(f"Not a file: {path}")
+    if path.suffix.lower() != ".csv":
+        raise ValueError(f"Not a CSV file: {path}")
+
+
 class MyArgs(argparse.Namespace):
     zipped_wdd_data_dir: Path
+    wdd_markers_path: Path
     output_dir: Path
 
 
@@ -199,6 +216,11 @@ def init_argparse() -> argparse.ArgumentParser:
         "zipped_wdd_data_dir",
         type=Path,
         help="path to directory containing zip archives of WDD detection data (APNG video snippets and JSON metadata)",
+    )
+    parser.add_argument(
+        "wdd_markers_path",
+        type=Path,
+        help="path to CSV file containing coordinates of the markers at the corners of the comb",
     )
     parser.add_argument(
         "output_dir",

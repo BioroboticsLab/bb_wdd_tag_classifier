@@ -1,12 +1,13 @@
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Optional
 from zipfile import ZipFile
 
 from tqdm import tqdm
 
-from daily_data_processing import is_wood_in_frame
+from daily_data_processing import is_wood_in_frame, validate_csv_path
 
 
 def main():
@@ -14,13 +15,24 @@ def main():
     Processes zipped WDD detection data to produce a daily overview of the
     number of detections and video snippets per predicted class label.
 
-    If the --woodfilter flag is set, also counts how many detections would be
-    filtered out due to wood being visible in the frame.
+    If the --woodfilter flag is set, and a valid --wdd_markers_path is provided,
+    also counts how many detections would be filtered out due to wood being
+    visible in the frame.
     """
     parser = init_argparse()
     args: MyArgs = parser.parse_args(namespace=MyArgs())
     zipped_wdd_data_dir = Path(args.zipped_wdd_data_dir)
     apply_woodfilter = args.woodfilter
+    if apply_woodfilter:
+        if args.wdd_markers_path is None:
+            parser.error("--woodfilter requires --wdd_markers_path to be set")
+        try:
+            wdd_markers_path = args.wdd_markers_path
+            validate_csv_path(wdd_markers_path)
+        except Exception as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+
     data = dict()
     zip_files = sorted(list(zipped_wdd_data_dir.rglob("*")))
     for zip_path in tqdm(zip_files):
@@ -45,7 +57,7 @@ def main():
                     json_data = json.load(metadata_file)
                 label = json_data["predicted_class_label"]
                 day_data[label]["detections"] += 1
-                if apply_woodfilter and is_wood_in_frame(json_data):
+                if apply_woodfilter and is_wood_in_frame(json_data, wdd_markers_path):
                     day_data[label]["wood filter"] += 1
 
                 # find matching video file
@@ -61,6 +73,7 @@ def main():
 class MyArgs(argparse.Namespace):
     zipped_wdd_data_dir: Path
     woodfilter: Optional[bool]
+    wdd_markers_path: Optional[Path]
 
 
 def init_argparse() -> argparse.ArgumentParser:
@@ -78,6 +91,11 @@ def init_argparse() -> argparse.ArgumentParser:
         "--woodfilter",
         action="store_true",
         help="enable counting of detections with wood in the frame",
+    )
+    parser.add_argument(
+        "--wdd_markers_path",
+        type=Path,
+        help="path to CSV file required by the wood filter, contains coordinates of the markers at the corners of the comb",
     )
     return parser
 
