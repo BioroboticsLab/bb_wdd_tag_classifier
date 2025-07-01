@@ -66,7 +66,7 @@ def init_argparse() -> argparse.ArgumentParser:
     parser.add_argument(
         "cropped_image_output_dir",
         type=Path,
-        help="Path to directory containing zip archives of .APNG video snippets",
+        help="Path to output directory",
     )
     return parser
 
