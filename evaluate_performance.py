@@ -1,3 +1,4 @@
+import argparse
 import json
 from pathlib import Path
 
@@ -5,14 +6,19 @@ import numpy as np
 import pandas as pd
 import sklearn
 
-TAG_CORRECTOR_DATA = Path("/mnt/trove/local_storage/processed-bee-data")
-
 
 def main():
     """
-    Generate a JSON file with daily and total confusion matrices to evaluate
-    the model's performance over the entire dataset.
+    Evaluates classifier performance on WDD data by computing per-day and total
+    confusion matrices and associated metrics.
+
+    Computes confusion_matrices, precision, recall, F1 score, and ROC AUC score,
+    and saves them as a JSON summary to 'output/classifier_results.json'.
     """
+    parser = init_argparse()
+    args: MyArgs = parser.parse_args(namespace=MyArgs())
+    classified_data_dir = args.classified_data_dir
+
     results = {
         "total": {
             "confusion_matrix": {
@@ -26,7 +32,7 @@ def main():
     tagged_probabilities_total = []
     y_true_total = []
     y_pred_total = []
-    dirs = sorted(TAG_CORRECTOR_DATA.glob("*"))
+    dirs = sorted(classified_data_dir.glob("*"))
     for dir in dirs:
         tagged_probabilities = []
         y_true = []
@@ -137,6 +143,29 @@ def main():
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w") as file:
         json.dump(results, file, indent=2)
+
+
+class MyArgs(argparse.Namespace):
+    classified_data_dir: Path
+
+
+def init_argparse() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Compute daily and total classification metrics from corrected WDD data. "
+            "Generates confusion matrices, precision, recall, F1 score, and ROC AUC "
+            "based on predicted and corrected labels for each day."
+        ),
+    )
+    parser.add_argument(
+        "classified_data_dir",
+        type=Path,
+        help=(
+            "path to directory containing multiple days of WDD data that has "
+            "been classified and processed into a Label GUI compatible structure"
+        ),
+    )
+    return parser
 
 
 if __name__ == "__main__":
