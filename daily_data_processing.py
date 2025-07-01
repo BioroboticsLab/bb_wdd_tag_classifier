@@ -23,8 +23,7 @@ FRAMEDIR_WDD = Path("/mnt/trove/wdd/wdd_output_2024/fullframes")
 
 def main():
     """
-    Classifies video snippets and processes WDD data into the expected format
-    for the Bee Tag Corrector interface.
+    Extracts and crops the first frame from APNG video snippets, applies the tag classifier and processes the data and video snippets into the output directory in a format that is compatible with the Label GUI.
     """
     parser = init_argparse()
     args: MyArgs = parser.parse_args(namespace=MyArgs())
