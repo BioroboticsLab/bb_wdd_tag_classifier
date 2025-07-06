@@ -22,13 +22,14 @@ def main():
     parser = init_argparse()
     args: MyArgs = parser.parse_args(namespace=MyArgs())
     cropped_image_dir = Path(args.cropped_image_dir)
+    output_dir = Path(args.output_dir)
     classifier = TaggedBeeClassifierConvNet("output/model.pth")
     data = run_classifier_on_all(classifier, cropped_image_dir)
     data = pd.DataFrame.from_dict(data)
-    generate_plots_pdfs(data)
+    generate_plots_pdfs(data, output_dir)
 
 
-def generate_plots_pdfs(df: pd.DataFrame):
+def generate_plots_pdfs(df: pd.DataFrame, output_dir: Path):
     """
     Creates a multi-page PDF containing a grid of cropped images sorted by tag
     status and the model's confidence.
@@ -42,8 +43,9 @@ def generate_plots_pdfs(df: pd.DataFrame):
     df_dict = {elem: pd.DataFrame() for elem in unique_dates}
     for key in df_dict.keys():
         df_dict[key] = df[:][df["date"] == key]
-        filename = f"output/visualizations/daily-cropped-image-grids/{key}.pdf"
+        filename = str(output_dir / (str(key) + ".pdf"))
         pdf_pages = PdfPages(filename)
+        output_dir.mkdir(parents=True, exist_ok=True)
         day_df = df_dict[key]
         figures = [
             plt.figure(i, figsize=(8.27, 11.69), dpi=100) for i in range(num_pages)
@@ -205,6 +207,7 @@ def run_classifier_on_all(
 
 class MyArgs(argparse.Namespace):
     cropped_image_dir: Path
+    output_dir: Path
 
 
 def init_argparse() -> argparse.ArgumentParser:
@@ -217,6 +220,11 @@ def init_argparse() -> argparse.ArgumentParser:
         "cropped_image_dir",
         type=Path,
         help="path to directory containing cropped images",
+    )
+    parser.add_argument(
+        "output_dir",
+        type=Path,
+        help="path to output directory",
     )
     return parser
 
