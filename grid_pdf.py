@@ -98,6 +98,13 @@ def run_classifier_one_by_one(
                 predictions.append(prediction)
                 confidences.append(confidence)
                 paths.append(path)
+    dates = []
+    date_pattern = r"20\d{2}-\d{2}-\d{2}"
+    for path in paths:
+        date_match = re.search(date_pattern, str(path))
+        if date_match is None:
+            raise ValueError(f"Failed to extract date info from path: {path}")
+        dates.append(date_match.group(0))
     data = {
         "class": np.array([predictions[i][0] for i, _ in enumerate(predictions)]),
         "class_label": np.array(
@@ -105,9 +112,7 @@ def run_classifier_one_by_one(
         ),
         "confidence": np.array([confidences[i][0] for i, _ in enumerate(confidences)]),
         "cropped_image_path": np.array(paths),
-        "date": np.array(
-            [re.search(r"20\d{2}-\d{2}-\d{2}", str(path)).group(0) for path in paths]
-        ),
+        "date": np.array(dates),
     }
     return data
 
@@ -122,14 +127,19 @@ def run_classifier_on_all(
     predictions, confidences, paths = classifier.classify_images_from_directory(
         cropped_image_dir, 128
     )
+    dates = []
+    date_pattern = r"20\d{2}-\d{2}-\d{2}"
+    for path in paths:
+        date_match = re.search(date_pattern, str(path))
+        if date_match is None:
+            raise ValueError(f"Failed to extract date info from path: {path}")
+        dates.append(date_match.group(0))
     data = {
         "class": predictions,
         "class_label": np.array([class_labels[pred] for pred in predictions]),
         "confidence": confidences,
         "cropped_image_path": paths,
-        "date": np.array(
-            [re.search(r"20\d{2}-\d{2}-\d{2}", str(path)).group(0) for path in paths]
-        ),
+        "date": np.array(dates),
     }
     return data
 
