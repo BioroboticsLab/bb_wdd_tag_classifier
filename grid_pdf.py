@@ -9,9 +9,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 from PIL import Image
 from tqdm import tqdm
 
-from inference import TaggedBeeClassifierConvNet
-
-class_labels = (TAGGED, UNTAGGED)
+from inference import TaggedBeeClassifierConvNet, class_labels
 
 
 def main():
