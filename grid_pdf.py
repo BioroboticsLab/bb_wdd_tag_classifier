@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_pdf import PdfPages
 from PIL import Image
-from tqdm import tqdm
 
 from inference import TaggedBeeClassifierConvNet, class_labels
 
@@ -72,43 +71,6 @@ def generate_plots_pdfs(df: pd.DataFrame, output_dir: Path):
             figure.savefig(pdf_pages, format="pdf")
         pdf_pages.close()
         plt.close("all")
-
-
-def run_classifier_one_by_one(
-    classifier: TaggedBeeClassifierConvNet, cropped_image_dir: Path
-):
-    """
-    Applies the classifier to all images in a given directory one by one.
-    """
-    # TODO: Could run the entire pipeline here without saving the cropped images. At the end, we take the labels and probabilities and images to create a grid and save that file.
-    # np.append is slower than appending on a list
-    predictions = []
-    confidences = []
-    paths: list[Path] = []
-    for path in tqdm(cropped_image_dir.rglob("*")):
-        if path.suffix == ".png":
-            with Image.open(path) as image:
-                prediction, confidence = classifier.classify_single_image(image)
-                predictions.append(prediction)
-                confidences.append(confidence)
-                paths.append(path)
-    dates = []
-    date_pattern = r"20\d{2}-\d{2}-\d{2}"
-    for path in paths:
-        date_match = re.search(date_pattern, str(path))
-        if date_match is None:
-            raise ValueError(f"Failed to extract date info from path: {path}")
-        dates.append(date_match.group(0))
-    data = {
-        "class": np.array([predictions[i][0] for i, _ in enumerate(predictions)]),
-        "class_label": np.array(
-            [class_labels[predictions[i][0]] for i, _ in enumerate(predictions)]
-        ),
-        "confidence": np.array([confidences[i][0] for i, _ in enumerate(confidences)]),
-        "cropped_image_path": np.array(paths),
-        "date": np.array(dates),
-    }
-    return data
 
 
 def run_classifier_on_all(
