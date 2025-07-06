@@ -71,7 +71,7 @@ def generate_plots_pdfs(df: pd.DataFrame, output_dir: Path):
                     current_idx % cols,
                 ),
             )
-            with Image.open(row["cropped_image_path"]) as cropped_image:
+            with Image.open(str(row.get("cropped_image_path"))) as cropped_image:
                 plt.imshow(cropped_image, cmap="gray")
                 plt.axis("off")
         for figure in figures:
