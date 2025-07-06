@@ -1,7 +1,6 @@
 import argparse
 import re
 from pathlib import Path
-from zipfile import ZipFile
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,7 +9,6 @@ from matplotlib.backends.backend_pdf import PdfPages
 from PIL import Image
 from tqdm import tqdm
 
-from image_cropping import crop_center
 from inference import TaggedBeeClassifierConvNet
 
 TAGGED = "tagged"
