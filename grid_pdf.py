@@ -21,13 +21,8 @@ def main():
     cropped_image_dir = Path("/home/niklas/bee-data/cropped/")
     classifier = TaggedBeeClassifierConvNet("output/model.pth")
     data = run_classifier_on_all(classifier, cropped_image_dir)
-    data = data_to_dataframe(data)
+    data = pd.DataFrame.from_dict(data)
     generate_plots_pdfs(data)
-
-
-def data_to_dataframe(data: dict[str, any]):
-    df = pd.DataFrame(data)
-    return df
 
 
 def generate_plots_pdfs(df: pd.DataFrame):
