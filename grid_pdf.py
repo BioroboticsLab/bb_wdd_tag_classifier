@@ -1,3 +1,4 @@
+import argparse
 import re
 from pathlib import Path
 from zipfile import ZipFile
@@ -18,7 +19,9 @@ class_labels = (TAGGED, UNTAGGED)
 
 
 def main():
-    cropped_image_dir = Path("/home/niklas/bee-data/cropped/")
+    parser = init_argparse()
+    args: MyArgs = parser.parse_args(namespace=MyArgs())
+    cropped_image_dir = Path(args.cropped_image_dir)
     classifier = TaggedBeeClassifierConvNet("output/model.pth")
     data = run_classifier_on_all(classifier, cropped_image_dir)
     data = pd.DataFrame.from_dict(data)
@@ -198,6 +201,24 @@ def run_classifier_on_all(
 #         ),
 #     }
 #     return data
+
+
+class MyArgs(argparse.Namespace):
+    cropped_image_dir: Path
+
+
+def init_argparse() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Creates a multi-page PDF containing a grid of cropped images sorted by tag status and the model's confidence."
+        ),
+    )
+    parser.add_argument(
+        "cropped_image_dir",
+        type=Path,
+        help="path to directory containing cropped images",
+    )
+    return parser
 
 
 if __name__ == "__main__":
