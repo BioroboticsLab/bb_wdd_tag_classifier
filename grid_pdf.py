@@ -40,7 +40,7 @@ def generate_plots_pdfs(df: pd.DataFrame, output_dir: Path):
     num_pages = int(np.ceil(count / plots_per_page))
     rows, cols = (10, 5)
     unique_dates = df["date"].unique()
-    df_dict = {elem: pd.DataFrame() for elem in unique_dates}
+    df_dict = {unique_date: pd.DataFrame() for unique_date in unique_dates}
     for key in df_dict.keys():
         df_dict[key] = df[:][df["date"] == key]
         filename = str(output_dir / (str(key) + ".pdf"))
