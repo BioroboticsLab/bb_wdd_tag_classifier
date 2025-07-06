@@ -11,8 +11,6 @@ from tqdm import tqdm
 
 from inference import TaggedBeeClassifierConvNet
 
-TAGGED = "tagged"
-UNTAGGED = "untagged"
 class_labels = (TAGGED, UNTAGGED)
 
 
