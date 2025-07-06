@@ -44,7 +44,7 @@ def generate_plots_pdfs(df: pd.DataFrame, output_dir: Path):
         unique_date: pd.DataFrame() for unique_date in unique_dates
     }
     for key in df_dict.keys():
-        df_dict[key] = df[:][df["date"] == key]
+        df_dict[key] = df.loc[df["date"] == key]
         filename = str(output_dir / (str(key) + ".pdf"))
         pdf_pages = PdfPages(filename)
         output_dir.mkdir(parents=True, exist_ok=True)
