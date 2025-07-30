@@ -15,6 +15,7 @@ from tqdm import tqdm
 from cnn_classifier.hyperparameters import image_size
 from cnn_classifier.inference import TaggedBeeClassifierConvNet, class_labels
 from utils.image_cropping import crop_center
+from utils.metadata_types import MetadataJson
 
 TAGGED_DANCE_DIR = "tagged-dances"
 UNTAGGED_DANCE_DIR = "untagged-dances"
@@ -62,7 +63,7 @@ def main():
                 # Find matching metadata file
                 metadata_filename = video_filename.replace("frames.apng", "waggle.json")
                 with zip_file.open(metadata_filename) as metadata_file:
-                    json_data = json.load(metadata_file)
+                    json_data: MetadataJson = json.load(metadata_file)
                     # We only care about waggles, so filter the rest out. Also,
                     # the model thinks the bright pixels of the wooden frame on
                     # the comb are tags, so we ignore those detections.

@@ -8,6 +8,7 @@ from zipfile import ZipFile
 from tqdm import tqdm
 
 from daily_data_processing import is_wood_in_frame, validate_csv_path
+from utils.metadata_types import MetadataJson
 
 
 def main():
@@ -54,7 +55,7 @@ def main():
             )
             for metadata_filename in tqdm(metadata_filenames):
                 with zip_file.open(metadata_filename) as metadata_file:
-                    json_data = json.load(metadata_file)
+                    json_data: MetadataJson = json.load(metadata_file)
                 label = json_data["predicted_class_label"]
                 day_data[label]["detections"] += 1
                 if apply_woodfilter and is_wood_in_frame(json_data, wdd_markers_path):
