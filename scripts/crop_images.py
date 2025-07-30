@@ -6,7 +6,7 @@ from PIL import Image
 from tqdm import tqdm
 
 from cnn_classifier.hyperparameters import image_size
-from image_cropping import crop_center
+from utils.image_cropping import crop_center
 
 
 def main():

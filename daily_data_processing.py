@@ -13,8 +13,8 @@ from PIL import Image
 from tqdm import tqdm
 
 from cnn_classifier.hyperparameters import image_size
-from image_cropping import crop_center
 from cnn_classifier.inference import TaggedBeeClassifierConvNet, class_labels
+from utils.image_cropping import crop_center
 
 TAGGED_DANCE_DIR = "tagged-dances"
 UNTAGGED_DANCE_DIR = "untagged-dances"
