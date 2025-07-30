@@ -13,13 +13,12 @@ from PIL import Image
 from tqdm import tqdm
 
 from cnn_classifier.hyperparameters import image_size
-from cnn_classifier.inference import TaggedBeeClassifierConvNet, class_labels
+from cnn_classifier.inference import TaggedBeeClassifierConvNet, TagStatus, class_labels
 from utils.image_cropping import crop_center
 from utils.metadata_types import MetadataJson
 
 TAGGED_DANCE_DIR = "tagged-dances"
 UNTAGGED_DANCE_DIR = "untagged-dances"
-TAGGED = "tagged"
 
 
 def main():
@@ -91,7 +90,7 @@ def main():
                 with tempfile.TemporaryDirectory() as tmp_dir:
                     zip_file.extract(video_filename, tmp_dir)
                     input = Path(tmp_dir) / (day_dance_id + ".apng")
-                    if class_labels[prediction] == TAGGED:
+                    if class_labels[prediction] == TagStatus.tagged.name:
                         output = tagged_target_dir / (day_dance_id + ".mp4")
                     else:
                         output = untagged_target_dir / (day_dance_id + ".mp4")

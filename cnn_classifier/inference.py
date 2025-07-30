@@ -1,3 +1,4 @@
+from enum import Enum
 from pathlib import Path
 
 import numpy as np
@@ -8,9 +9,13 @@ from tqdm import tqdm
 
 from .model import TaggedBeeClassificationModel
 
-TAGGED = "tagged"
-UNTAGGED = "untagged"
-class_labels = (TAGGED, UNTAGGED)
+
+class TagStatus(Enum):
+    tagged = 0
+    untagged = 1
+
+
+class_labels = (TagStatus.tagged.name, TagStatus.untagged.name)
 
 
 class TaggedBeeClassifierConvNet:
