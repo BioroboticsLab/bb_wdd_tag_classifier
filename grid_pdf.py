@@ -8,7 +8,7 @@ import pandas as pd
 from matplotlib.backends.backend_pdf import PdfPages
 from PIL import Image
 
-from inference import TaggedBeeClassifierConvNet, class_labels
+from cnn_classifier.inference import TaggedBeeClassifierConvNet, class_labels
 
 
 def main():

@@ -6,7 +6,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from inference import TaggedBeeClassifierConvNet, class_labels
+from cnn_classifier.inference import TaggedBeeClassifierConvNet, class_labels
 
 ZIPPED_WDD_PATH = Path("/mnt/trove/wdd/wdd_output_2024/cam0/")
 

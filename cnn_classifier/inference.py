@@ -6,7 +6,7 @@ import torchvision.datasets as datasets
 import torchvision.transforms.v2 as transforms
 from tqdm import tqdm
 
-from model import TaggedBeeClassificationModel
+from .model import TaggedBeeClassificationModel
 
 TAGGED = "tagged"
 UNTAGGED = "untagged"

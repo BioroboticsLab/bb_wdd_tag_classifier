@@ -12,9 +12,9 @@ from ffmpeg import FFmpeg
 from PIL import Image
 from tqdm import tqdm
 
-from hyperparameters import image_size
+from cnn_classifier.hyperparameters import image_size
 from image_cropping import crop_center
-from inference import TaggedBeeClassifierConvNet, class_labels
+from cnn_classifier.inference import TaggedBeeClassifierConvNet, class_labels
 
 TAGGED_DANCE_DIR = "tagged-dances"
 UNTAGGED_DANCE_DIR = "untagged-dances"

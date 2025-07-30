@@ -5,7 +5,7 @@ from zipfile import ZipFile
 from PIL import Image
 from tqdm import tqdm
 
-from hyperparameters import image_size
+from cnn_classifier.hyperparameters import image_size
 from image_cropping import crop_center
 
 
