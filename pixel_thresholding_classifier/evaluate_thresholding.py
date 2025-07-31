@@ -212,7 +212,7 @@ class MyArgs(argparse.Namespace):
 def init_argparse() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
-            "Extracts and crops the first frame from APNG video snippets, applies the tag classifier and processes the data and video snippets into the output directory in a format that is compatible with the Label GUI"
+            "Evaluates performance of pixel intensity thresholding classifier on full dataset."
         ),
     )
     parser.add_argument(
